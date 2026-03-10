@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Timer – UCSC Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --maroon: #8b0000;
+      --gold: #c9a84c;
+      --bg: #f5f3ee;
+      --text: #1a1a1a;
+      --muted: #888;
+      --card: #ffffff;
+      --border: #e0dbd0;
+    }
+    body.dark {
+      --bg: #141414;
+      --text: #f0ede8;
+      --muted: #888;
+      --card: #1e1e1e;
+      --border: #333;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .timer-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(139,0,0,0.08);
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .timer-label {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--maroon);
+      margin-bottom: 0.5rem;
+    }
+
+    .timer-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 2rem;
+    }
+
+    /* Ring */
+    .timer-ring-wrap {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 2rem;
+    }
+    .timer-ring-wrap svg {
+      transform: rotate(-90deg);
+      position: absolute; top: 0; left: 0;
+    }
+    .ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+    .ring-progress {
+      fill: none;
+      stroke: var(--maroon);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 502;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .ring-progress.warning { stroke: var(--gold); }
+    .ring-progress.danger  { stroke: #ff4444; }
+
+    .timer-display {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .timer-time {
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 2.8rem;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      line-height: 1;
+    }
+    .timer-mode {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Session dots */
+    .session-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 1.75rem;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .dot.done { background: var(--maroon); }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.65rem;
+    }
+    .btn {
+      padding: 0.6rem 1.4rem;
+      border-radius: 10px;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-start  { background: var(--maroon); color: #fff; }
+    .btn-start:hover  { background: #6b0000; }
+    .btn-pause  { background: var(--gold); color: #5a3c00; }
+    .btn-pause:hover  { background: #b89040; }
+    .btn-reset  { background: var(--border); color: var(--muted); }
+    .btn-reset:hover  { background: #d0cbc0; }
+
+    /* Notification toast */
+    .notif {
+      position: fixed;
+      top: 1.5rem; left: 50%;
+      transform: translateX(-50%) translateY(-80px);
+      background: var(--maroon);
+      color: #fff;
+      padding: 0.85rem 1.75rem;
+      border-radius: 12px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+      z-index: 999;
+      white-space: nowrap;
+    }
+    .notif.show { transform: translateX(-50%) translateY(0); }
+
+    .dark-toggle {
+      position: fixed;
+      top: 1rem; right: 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">🌙 Dark</button>
+
+<div class="timer-card">
+  <div class="timer-label">⏱ Pomodoro</div>
+  <div class="timer-title">Study Timer</div>
+
+  <!-- SVG Ring -->
+  <div class="timer-ring-wrap">
+    <svg width="180" height="180" viewBox="0 0 180 180">
+      <circle class="ring-bg" cx="90" cy="90" r="80"/>
+      <circle class="ring-progress" id="ring" cx="90" cy="90" r="80"/>
+    </svg>
+    <div class="timer-display">
+      <div class="timer-time" id="display">25:00</div>
+      <div class="timer-mode" id="modeLabel">Focus</div>
+    </div>
+  </div>
+
+  <!-- Session tracker dots (4 pomodoros) -->
+  <div class="session-dots">
+    <div class="dot" id="d0"></div>
+    <div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-start" id="startBtn" onclick="startTimer()">Start</button>
+    <button class="btn btn-pause" id="pauseBtn" onclick="pauseTimer()" style="display:none">Pause</button>
+    <button class="btn btn-reset" onclick="resetTimer()">Reset</button>
+  </div>
+</div>
+
+<div class="notif" id="notif">🔔 Time's up! Take a break.</div>
+
+<script>
+  const WORK_SEC  = 25 * 60;
+  const BREAK_SEC = 5  * 60;
+  const CIRCUMFERENCE = 2 * Math.PI * 80; // ≈ 502.65
+
+  let total     = WORK_SEC;
+  let remaining = WORK_SEC;
+  let interval  = null;
+  let isRunning = false;
+  let isBreak   = false;
+  let sessions  = 0;
+
+  const display   = document.getElementById('display');
+  const ring      = document.getElementById('ring');
+  const modeLabel = document.getElementById('modeLabel');
+  const startBtn  = document.getElementById('startBtn');
+  const pauseBtn  = document.getElementById('pauseBtn');
+  const notif     = document.getElementById('notif');
+
+  ring.style.strokeDasharray  = CIRCUMFERENCE;
+  ring.style.strokeDashoffset = 0;
+
+  function fmt(s) {
+    const m = Math.floor(s / 60);
+    return `${String(m).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`;
+  }
+
+  function updateRing() {
+    const pct = remaining / total;
+    ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
+    ring.className = 'ring-progress' +
+      (pct <= 0.1 ? ' danger' : pct <= 0.3 ? ' warning' : '');
+  }
+
+  function tick() {
+    if (remaining <= 0) {
+      clearInterval(interval);
+      interval = null;
+      isRunning = false;
+      triggerNotification();
+      if (!isBreak) {
+        sessions = Math.min(sessions + 1, 4);
+        updateDots();
+        if (sessions < 4) { switchMode(true); }
+      } else {
+        switchMode(false);
+      }
+      return;
+    }
+    remaining--;
+    display.textContent = fmt(remaining);
+    updateRing();
+  }
+
+  function startTimer() {
+    if (isRunning) return;
+    if (interval) return; // guard against multiple intervals
+    isRunning = true;
+    startBtn.style.display = 'none';
+    pauseBtn.style.display = '';
+    interval = setInterval(tick, 1000);
+  }
+
+  function pauseTimer() {
+    if (!isRunning) return;
+    clearInterval(interval);
+    interval = null;
+    isRunning = false;
+    startBtn.style.display = '';
+    pauseBtn.style.display = 'none';
+  }
+
+  function resetTimer() {
+    clearInterval(interval);
+    interval = null;
+    isRunning = false;
+    isBreak = false;
+    remaining = WORK_SEC;
+    total = WORK_SEC;
+    display.textContent = fmt(remaining);
+    modeLabel.textContent = 'Focus';
+    ring.style.strokeDashoffset = 0;
+    ring.className = 'ring-progress';
+    startBtn.style.display = '';
+    pauseBtn.style.display = 'none';
+    sessions = 0;
+    updateDots();
+  }
+
+  function switchMode(toBreak) {
+    isBreak = toBreak;
+    total = toBreak ? BREAK_SEC : WORK_SEC;
+    remaining = total;
+    modeLabel.textContent = toBreak ? 'Break ☕' : 'Focus';
+    display.textContent = fmt(remaining);
+    ring.style.strokeDashoffset = 0;
+    startBtn.style.display = '';
+    pauseBtn.style.display = 'none';
+    isRunning = false;
+  }
+
+  function updateDots() {
+    for (let i = 0; i < 4; i++) {
+      document.getElementById('d' + i).classList.toggle('done', i < sessions);
+    }
+  }
+
+  function triggerNotification() {
+    // Browser notification
+    if (Notification.permission === 'granted') {
+      new Notification('⏱ UCSC Hub', { body: isBreak ? 'Break over! Back to work.' : "25 min done! Time for a break." });
+    }
+    // Toast
+    notif.textContent = isBreak ? '✅ Break over! Focus time.' : '🔔 Time\'s up! Take a 5-min break.';
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 4000);
+    // Audio beep
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.25, 0.5].forEach(delay => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.3, ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.3);
+        osc.start(ctx.currentTime + delay);
+        osc.stop(ctx.currentTime + delay + 0.3);
+      });
+    } catch(e) {}
+  }
+
+  // Request notification permission
+  if (Notification && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+</script>
+</body>
+</html>
