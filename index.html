@@ -1,507 +1,969 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Group Idea Board</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <title>UCSC Student Toolkit - Integrated</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --ink: #0f0e17;
-      --paper: #faf9f6;
-      --cream: #f2efe8;
-      --accent: #e8613a;
-      --accent2: #3a7de8;
-      --muted: #8a8577;
+      --maroon: #8b0000;
+      --maroon-dark: #6b0000;
+      --maroon-light: #a50000;
+      --gold: #c9a84c;
+      --gold-light: #f0c040;
+      --bg: #f5f3ee;
+      --sidebar-bg: #fff;
+      --text: #1a1a1a;
+      --muted: #777;
+      --border: #e0dbd0;
       --card: #ffffff;
-      --border: #e2ddd6;
+      --input-bg: #faf9f6;
+    }
+
+    body.dark {
+      --bg: #141414;
+      --sidebar-bg: #1e1e1e;
+      --text: #f0ede8;
+      --muted: #999;
+      --border: #333;
+      --card: #1e1e1e;
+      --input-bg: #252525;
     }
 
     body {
       font-family: 'DM Sans', sans-serif;
-      background: var(--paper);
-      color: var(--ink);
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      transition: background 0.3s, color 0.3s;
     }
 
-    /* ── HEADER ── */
-    header {
-      background: var(--ink);
-      color: var(--paper);
-      padding: 0 2.5rem;
+    /* ── NAVBAR ── */
+    .navbar {
+      background: var(--maroon);
+      height: 60px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      height: 64px;
+      padding: 0 1.5rem;
+      gap: 1.5rem;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 200;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
     }
-    .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 1.2rem;
-      letter-spacing: -0.02em;
+
+    .navbar-logo {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
+      text-decoration: none;
     }
-    .logo-dot {
-      width: 10px; height: 10px;
-      background: var(--accent);
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .header-badge {
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 4px 12px;
-      border-radius: 999px;
-    }
-
-    /* ── HERO ── */
-    .hero {
-      background: var(--ink);
-      color: var(--paper);
-      padding: 3.5rem 2.5rem 4rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      right: -80px; top: -80px;
-      width: 320px; height: 320px;
-      background: radial-gradient(circle, rgba(232,97,58,0.25) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero::after {
-      content: '';
-      position: absolute;
-      left: 30%; bottom: -60px;
-      width: 200px; height: 200px;
-      background: radial-gradient(circle, rgba(58,125,232,0.18) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-    .hero h1 {
+    .navbar-logo-placeholder {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      background: var(--maroon-dark);
+      border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
       font-family: 'Syne', sans-serif;
       font-weight: 800;
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      max-width: 500px;
-    }
-    .hero h1 em {
-      font-style: normal;
-      color: var(--accent);
-    }
-    .hero p {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      color: rgba(250,249,246,0.55);
-      max-width: 380px;
-      line-height: 1.6;
-    }
-
-    /* ── MAIN ── */
-    main {
-      flex: 1;
-      max-width: 780px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 4rem;
-    }
-
-    /* ── INPUT CARD ── */
-    .input-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.75rem;
-      box-shadow: 0 4px 24px rgba(15,14,23,0.06);
-      margin-bottom: 2rem;
-    }
-    .input-card-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.65rem;
+      color: var(--gold);
       letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
+      flex-shrink: 0;
     }
-    .input-row {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-    .select-wrap {
-      position: relative;
-      flex: 0 0 200px;
-    }
-    .select-wrap select {
-      appearance: none;
-      width: 100%;
-      padding: 0.7rem 2.2rem 0.7rem 1rem;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      background: var(--cream);
-      color: var(--ink);
-      cursor: pointer;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .select-wrap select:focus { border-color: var(--accent); }
-    .select-wrap::after {
-      content: '▾';
-      position: absolute;
-      right: 0.75rem; top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.75rem;
-      color: var(--muted);
-      pointer-events: none;
-    }
-    .idea-input {
-      flex: 1 1 200px;
-      padding: 0.7rem 1rem;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      background: var(--cream);
-      color: var(--ink);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .idea-input::placeholder { color: #bbb5ab; }
-    .idea-input:focus { border-color: var(--accent2); }
-    .btn-add {
-      padding: 0.7rem 1.5rem;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
+    .navbar-brand {
       font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 0.88rem;
-      letter-spacing: 0.03em;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      white-space: nowrap;
-    }
-    .btn-add:hover { background: #d0512e; }
-    .btn-add:active { transform: scale(0.97); }
-
-    /* ── STATS ROW ── */
-    .stats-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.25rem;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .stats-row h2 {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 1.05rem;
+      color: #fff;
+      letter-spacing: -0.01em;
     }
-    .idea-count {
+    .navbar-brand span { color: var(--gold); }
+
+    .navbar-nav {
       display: flex;
+      gap: 0.35rem;
+      margin-left: auto;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px 12px;
     }
-    .idea-count strong { color: var(--accent); font-weight: 700; }
-    .btn-clear {
-      font-size: 0.78rem;
-      color: var(--muted);
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 4px 12px;
-      cursor: pointer;
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.7);
       font-family: 'DM Sans', sans-serif;
-      transition: color 0.2s, border-color 0.2s;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
     }
-    .btn-clear:hover { color: var(--accent); border-color: var(--accent); }
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--gold);
+      color: var(--maroon-dark);
+      font-weight: 700;
+    }
 
-    /* ── IDEA LIST ── */
-    .ideas-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
-
-    .idea-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
+    /* Dark mode toggle */
+    .dark-toggle {
+      margin-left: 0.75rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      animation: slideIn 0.3s cubic-bezier(0.22,1,0.36,1);
-      box-shadow: 0 2px 8px rgba(15,14,23,0.04);
-      transition: box-shadow 0.2s;
+      gap: 0.5rem;
+      cursor: pointer;
     }
-    .idea-item:hover { box-shadow: 0 4px 16px rgba(15,14,23,0.09); }
+    .toggle-track {
+      width: 40px; height: 22px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 999px;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .toggle-track.on { background: var(--gold); }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: left 0.25s;
+    }
+    .toggle-track.on .toggle-thumb { left: 21px; }
+    .toggle-icon { font-size: 0.85rem; }
 
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(10px); }
+    /* ── LAYOUT ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      transition: background 0.3s;
+    }
+    .sidebar-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--maroon);
+      margin-bottom: 1rem;
+      padding-left: 0.25rem;
+    }
+    .event-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.7rem 0.75rem;
+      border-radius: 10px;
+      margin-bottom: 0.4rem;
+      cursor: default;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      border: 1px solid transparent;
+    }
+    .event-item:hover {
+      background: #fff8f0;
+      border-color: var(--gold);
+      transform: scale(1.03);
+      box-shadow: 0 0 10px rgba(201,168,76,0.3);
+    }
+    body.dark .event-item:hover { background: #2a2218; }
+    .event-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .event-text { font-size: 0.82rem; line-height: 1.4; }
+    .event-date { font-size: 0.7rem; color: var(--muted); margin-top: 1px; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content {
+      padding: 2rem;
+      animation: fadeIn 0.5s ease both;
+    }
+
+    .page { display: none; animation: fadeIn 0.4s ease both; }
+    .page.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .idea-index {
+    .page-heading {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
-      font-size: 0.7rem;
-      color: var(--border);
-      min-width: 24px;
+      font-size: 1.6rem;
+      color: var(--maroon);
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
     }
-    .idea-text {
-      flex: 1;
-      font-size: 0.92rem;
-      line-height: 1.4;
+    .page-sub { font-size: 0.88rem; color: var(--muted); margin-bottom: 2rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      box-shadow: 0 3px 16px rgba(0,0,0,0.06);
+      transition: background 0.3s;
+      margin-bottom: 1.5rem;
     }
-    .idea-author {
-      font-size: 0.78rem;
-      color: var(--muted);
-      font-style: italic;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
+
+    /* Welcome grid */
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
     }
-    .author-avatar {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
+    .welcome-tile {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .welcome-tile:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(139,0,0,0.12);
+      border-color: var(--maroon);
+    }
+    .tile-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .tile-label {
       font-family: 'Syne', sans-serif;
       font-weight: 700;
-      font-size: 0.6rem;
-      color: #fff;
-      flex-shrink: 0;
+      font-size: 0.85rem;
+      color: var(--maroon);
     }
-    .btn-delete {
+    .tile-desc { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+
+    /* ── GPA STYLES ── */
+    .gpa-banner {
+      background: var(--maroon);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+      color: #fff;
+    }
+    .gpa-banner-label {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 0.3rem;
+    }
+    .gpa-value {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2.6rem;
+      color: var(--gold-light);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      transition: all 0.4s;
+    }
+    .gpa-grade {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.8);
+      margin-top: 0.2rem;
+    }
+    .gpa-stats {
+      text-align: right;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.8;
+    }
+    .gpa-stats strong { color: rgba(255,255,255,0.85); }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--maroon);
+      margin-bottom: 1rem;
+    }
+
+    .course-header {
+      display: grid;
+      grid-template-columns: 1fr 90px 110px 36px;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 0 0 0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.6rem;
+    }
+    .courses-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .course-row {
+      display: grid;
+      grid-template-columns: 1fr 90px 110px 36px;
+      gap: 0.5rem;
+      align-items: center;
+      animation: rowIn 0.25s ease both;
+    }
+    @keyframes rowIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: var(--maroon); }
+
+    .btn-remove {
       background: none;
-      border: none;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      width: 36px; height: 36px;
       cursor: pointer;
-      color: #d0cac2;
+      color: var(--muted);
       font-size: 1rem;
-      padding: 2px 6px;
-      border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-remove:hover {
+      border-color: #cc3333;
+      color: #cc3333;
+      background: #fff0f0;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .btn {
+      padding: 0.6rem 1.3rem;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-add     { background: var(--border); color: var(--text); }
+    .btn-add:hover { background: #d5cfc5; }
+    .btn-calc    { background: var(--maroon); color: #fff; }
+    .btn-calc:hover { background: var(--maroon-dark); }
+    .btn-clear   { background: none; color: var(--muted); border: 1.5px solid var(--border); }
+    .btn-clear:hover { color: #cc3333; border-color: #cc3333; }
+
+    .grade-ref {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.4rem;
+      font-size: 0.75rem;
+    }
+    .grade-ref-item {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0.35rem 0.5rem;
+      text-align: center;
+      color: var(--muted);
+    }
+    .grade-ref-item strong { color: var(--maroon); display: block; font-size: 0.85rem; }
+
+    /* ── TIMER STYLES ── */
+    .timer-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(139,0,0,0.08);
+      animation: fadeUp 0.5s ease both;
+      margin: 0 auto;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .timer-label {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--maroon);
+      margin-bottom: 0.5rem;
+    }
+
+    .timer-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 2rem;
+    }
+
+    .timer-ring-wrap {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 2rem;
+    }
+    .timer-ring-wrap svg {
+      transform: rotate(-90deg);
+      position: absolute; top: 0; left: 0;
+    }
+    .ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+    .ring-progress {
+      fill: none;
+      stroke: var(--maroon);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 502;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .ring-progress.warning { stroke: var(--gold); }
+    .ring-progress.danger  { stroke: #ff4444; }
+
+    .timer-display {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .timer-time {
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 2.8rem;
+      letter-spacing: 0.02em;
+      color: var(--text);
       line-height: 1;
     }
-    .btn-delete:hover { color: var(--accent); background: #fdf0ec; }
-
-    /* ── EMPTY STATE ── */
-    .empty-state {
-      text-align: center;
-      padding: 3rem 1rem;
+    .timer-mode {
+      font-size: 0.7rem;
       color: var(--muted);
-    }
-    .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-    .empty-state p { font-size: 0.9rem; line-height: 1.6; }
-
-    /* ── FOOTER ── */
-    footer {
-      background: var(--cream);
-      border-top: 1px solid var(--border);
-      text-align: center;
-      padding: 1.25rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      letter-spacing: 0.04em;
+      margin-top: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
-    /* ── TOAST ── */
-    .toast {
+    .session-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 1.75rem;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .dot.done { background: var(--maroon); }
+
+    .btn-start  { background: var(--maroon); color: #fff; }
+    .btn-start:hover  { background: #6b0000; }
+    .btn-pause  { background: var(--gold); color: #5a3c00; }
+    .btn-pause:hover  { background: #b89040; }
+    .btn-reset  { background: var(--border); color: var(--muted); }
+    .btn-reset:hover  { background: #d0cbc0; }
+
+    .notif {
       position: fixed;
-      bottom: 2rem; right: 2rem;
-      background: var(--ink);
-      color: var(--paper);
-      padding: 0.75rem 1.25rem;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.25s, transform 0.25s;
-      pointer-events: none;
+      top: 1.5rem; left: 50%;
+      transform: translateX(-50%) translateY(-80px);
+      background: var(--maroon);
+      color: #fff;
+      padding: 0.85rem 1.75rem;
+      border-radius: 12px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
       z-index: 999;
+      white-space: nowrap;
     }
-    .toast.show { opacity: 1; transform: translateY(0); }
+    .notif.show { transform: translateX(-50%) translateY(0); }
 
-    @media (max-width: 520px) {
-      .select-wrap { flex: 0 0 100%; }
-      .idea-input  { flex: 1 1 100%; }
-      .btn-add     { width: 100%; }
-      header { padding: 0 1.25rem; }
+    @media (max-width: 640px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .course-header, .course-row {
+        grid-template-columns: 1fr 70px 90px 32px;
+      }
     }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="logo"><span class="logo-dot"></span> IdeaBoard</div>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-logo" href="#">
+    <div class="navbar-logo-placeholder">UCSC</div>
+    <span class="navbar-brand">UCSC <span>Hub</span></span>
+  </a>
 
-</header>
+  <div class="navbar-nav">
+    <button class="nav-btn active" onclick="showPage('home', this)">Home</button>
+    <button class="nav-btn" onclick="showPage('gpa', this)">GPA Calculator</button>
+    <button class="nav-btn" onclick="showPage('timer', this)">Study Timer</button>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-label">Collaborative Thinking</div>
-  <h1>Every great idea<br/>starts <em>here.</em></h1>
-  <p>Add your ideas below, see what your team is thinking, and build something amazing together.</p>
-</section>
-
-<!-- MAIN -->
-<main>
-
-  <!-- INPUT CARD -->
-  <div class="input-card">
-    <div class="input-card-title">Submit an Idea</div>
-    <div class="input-row">
-      <div class="select-wrap">
-        <select id="nameSelect">
-          <option value="">Select your name…</option>
-          <option>Alex</option>
-          <option>Sara</option>
-          <option>Nimal</option>
-          <option>Jordan</option>
-          <option>Priya</option>
-          <option>Leo</option>
-        </select>
+    <!-- Dark Mode Toggle -->
+    <div class="dark-toggle" onclick="toggleDark()" title="Toggle Dark Mode">
+      <span class="toggle-icon">☀️</span>
+      <div class="toggle-track" id="toggleTrack">
+        <div class="toggle-thumb"></div>
       </div>
-      <input class="idea-input" id="ideaInput" type="text" placeholder="Enter your idea here…" maxlength="200"/>
-      <button class="btn-add" onclick="addIdea()">+ Add Idea</button>
+      <span class="toggle-icon">🌙</span>
     </div>
   </div>
+</nav>
 
-  <!-- STATS ROW -->
-  <div class="stats-row">
-    <h2>Board Ideas</h2>
-    <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-      <div class="idea-count">Total: <strong id="ideaCountNum">3</strong> ideas</div>
-      <button class="btn-clear" onclick="clearInput()">✕ Clear input</button>
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">📅 Upcoming Events</div>
+
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Mid-term Exams</div>
+        <div class="event-date">Mar 15, 2025</div>
+      </div>
     </div>
-  </div>
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Project Submission</div>
+        <div class="event-date">Mar 20, 2025</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Campus Hackathon</div>
+        <div class="event-date">Mar 25, 2025</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Final Exams Week</div>
+        <div class="event-date">Apr 10–17, 2025</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Graduation Ceremony</div>
+        <div class="event-date">May 3, 2025</div>
+      </div>
+    </div>
+  </aside>
 
-  <!-- LIST -->
-  <ul class="ideas-list" id="ideasList"></ul>
-  <div class="empty-state" id="emptyState" style="display:none;">
-    <div class="empty-icon">💡</div>
-    <p>No ideas yet.<br/>Be the first to share one!</p>
-  </div>
+  <!-- MAIN -->
+  <main class="main-content">
 
-</main>
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+      <div class="page-heading">Welcome to UCSC Hub 👋</div>
+      <div class="page-sub">Your all-in-one student toolkit. Choose a tool to get started.</div>
+      <div class="welcome-grid">
+        <div class="welcome-tile" onclick="showPage('gpa', document.querySelectorAll('.nav-btn')[1])">
+          <div class="tile-icon">🎓</div>
+          <div class="tile-label">GPA Calculator</div>
+          <div class="tile-desc">Compute your semester GPA instantly</div>
+        </div>
+        <div class="welcome-tile" onclick="showPage('timer', document.querySelectorAll('.nav-btn')[2])">
+          <div class="tile-icon">⏱️</div>
+          <div class="tile-label">Study Timer</div>
+          <div class="tile-desc">25-minute Pomodoro focus sessions</div>
+        </div>
+      </div>
+    </div>
 
-<!-- FOOTER -->
-<footer>Group Idea Board &nbsp;©&nbsp;2025</footer>
+    <!-- GPA PAGE -->
+    <div class="page" id="page-gpa">
+      <div class="page-heading">GPA Calculator</div>
+      <div class="page-sub">Add your courses and calculate your GPA.</div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+      <!-- GPA Banner -->
+      <div class="gpa-banner">
+        <div>
+          <div class="gpa-banner-label">Cumulative GPA</div>
+          <div class="gpa-value" id="gpaDisplay">—</div>
+          <div class="gpa-grade" id="gpaGrade">Add courses below</div>
+        </div>
+        <div class="gpa-stats" id="gpaStats">
+          <div>Total Credits: <strong id="totalCredits">0</strong></div>
+          <div>Courses: <strong id="totalCourses">0</strong></div>
+          <div>Quality Pts: <strong id="totalQP">0</strong></div>
+        </div>
+      </div>
+
+      <!-- Course Entry -->
+      <div class="card">
+        <div class="card-title">Courses</div>
+        <div class="course-header">
+          <span>Course Name</span>
+          <span>Credits</span>
+          <span>Grade</span>
+          <span></span>
+        </div>
+        <div class="courses-list" id="coursesList"></div>
+        <div class="btn-row">
+          <button class="btn btn-add" onclick="addRow()">+ Add Course</button>
+          <button class="btn btn-calc" onclick="calculate()">Calculate GPA</button>
+          <button class="btn btn-clear" onclick="clearAll()">Clear All</button>
+        </div>
+      </div>
+
+      <!-- Grade Reference -->
+      <div class="card">
+        <div class="card-title">Grade Scale Reference</div>
+        <div class="grade-ref">
+          <div class="grade-ref-item"><strong>A+/A</strong>4.0</div>
+          <div class="grade-ref-item"><strong>A−</strong>3.7</div>
+          <div class="grade-ref-item"><strong>B+</strong>3.3</div>
+          <div class="grade-ref-item"><strong>B</strong>3.0</div>
+          <div class="grade-ref-item"><strong>B−</strong>2.7</div>
+          <div class="grade-ref-item"><strong>C+</strong>2.3</div>
+          <div class="grade-ref-item"><strong>C</strong>2.0</div>
+          <div class="grade-ref-item"><strong>C−</strong>1.7</div>
+          <div class="grade-ref-item"><strong>D+</strong>1.3</div>
+          <div class="grade-ref-item"><strong>D</strong>1.0</div>
+          <div class="grade-ref-item"><strong>D−</strong>0.7</div>
+          <div class="grade-ref-item"><strong>F</strong>0.0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMER PAGE -->
+    <div class="page" id="page-timer">
+      <div class="page-heading">Study Timer</div>
+      <div class="page-sub">Stay focused with Pomodoro sessions.</div>
+      
+      <div class="timer-card">
+        <div class="timer-label">⏱ Pomodoro</div>
+        <div class="timer-title">Study Timer</div>
+
+        <!-- SVG Ring -->
+        <div class="timer-ring-wrap">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle class="ring-bg" cx="90" cy="90" r="80"/>
+            <circle class="ring-progress" id="ring" cx="90" cy="90" r="80"/>
+          </svg>
+          <div class="timer-display">
+            <div class="timer-time" id="display">25:00</div>
+            <div class="timer-mode" id="modeLabel">Focus</div>
+          </div>
+        </div>
+
+        <!-- Session tracker dots (4 pomodoros) -->
+        <div class="session-dots">
+          <div class="dot" id="d0"></div>
+          <div class="dot" id="d1"></div>
+          <div class="dot" id="d2"></div>
+          <div class="dot" id="d3"></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-start" id="startBtn" onclick="startTimer()">Start</button>
+          <button class="btn btn-pause" id="pauseBtn" onclick="pauseTimer()" style="display:none">Pause</button>
+          <button class="btn btn-reset" onclick="resetTimer()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="notif" id="notif">🔔 Time's up! Take a break.</div>
 
 <script>
-  const AVATAR_COLORS = ['#e8613a','#3a7de8','#3ab87d','#c03ae8','#e8b83a','#3ae8d4'];
-  const ideas = [
-    { text: 'Build a study planner', author: 'Nimal' },
-    { text: 'Start a podcast',       author: 'Sara'  },
-    { text: 'Organize a coding workshop', author: 'Alex' },
-  ];
-
-  function avatarColor(name) {
-    let h = 0;
-    for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
-    return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+  /* ── PAGE NAVIGATION ── */
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    if (btn) btn.classList.add('active');
   }
 
-  function render() {
-    const list = document.getElementById('ideasList');
-    const empty = document.getElementById('emptyState');
-    document.getElementById('ideaCountNum').textContent = ideas.length;
-    list.innerHTML = '';
-    if (!ideas.length) { empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-    ideas.forEach((idea, i) => {
-      const li = document.createElement('li');
-      li.className = 'idea-item';
-      const initials = idea.author.slice(0, 2).toUpperCase();
-      li.innerHTML = `
-        <span class="idea-index">${String(i+1).padStart(2,'0')}</span>
-        <span class="idea-text">${escHtml(idea.text)}</span>
-        <span class="idea-author">
-          <span class="author-avatar" style="background:${avatarColor(idea.author)}">${initials}</span>
-          suggested by <strong>${escHtml(idea.author)}</strong>
-        </span>
-        <button class="btn-delete" onclick="deleteIdea(${i})" title="Remove idea">✕</button>`;
-      list.appendChild(li);
+  function toggleDark() {
+    document.body.classList.toggle('dark');
+    document.getElementById('toggleTrack').classList.toggle('on');
+  }
+
+  /* ── GPA CALCULATOR ── */
+  const GRADE_MAP = {
+    'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+    'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+    'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+    'D+': 1.3, 'D': 1.0, 'D-': 0.7,
+    'F':  0.0
+  };
+
+  const GRADE_LABELS = {
+    4.0: 'Summa Cum Laude ✨',
+    3.7: 'Magna Cum Laude 🌟',
+    3.3: 'Cum Laude 🎓',
+    3.0: 'Good Standing',
+    2.7: 'Satisfactory',
+    2.3: 'Passing',
+    2.0: 'Minimum Passing',
+    0:   'Needs Improvement'
+  };
+
+  let rowId = 0;
+
+  function gradeLabel(gpa) {
+    for (const [threshold, label] of Object.entries(GRADE_LABELS).sort((a,b) => b[0]-a[0])) {
+      if (gpa >= +threshold) return label;
+    }
+    return GRADE_LABELS[0];
+  }
+
+  function addRow(name = '', credits = '', grade = '') {
+    const id = rowId++;
+    const list = document.getElementById('coursesList');
+    const row = document.createElement('div');
+    row.className = 'course-row';
+    row.id = 'row-' + id;
+
+    const gradeOptions = Object.keys(GRADE_MAP).map(g =>
+      `<option value="${g}" ${g === grade ? 'selected' : ''}>${g}</option>`
+    ).join('');
+
+    row.innerHTML = `
+      <input type="text" placeholder="e.g. Mathematics" value="${name}"/>
+      <input type="number" placeholder="3" min="1" max="6" value="${credits}" step="1"/>
+      <select>${gradeOptions}</select>
+      <button class="btn-remove" onclick="removeRow(${id})">✕</button>
+    `;
+    list.appendChild(row);
+  }
+
+  function removeRow(id) {
+    const el = document.getElementById('row-' + id);
+    if (el) el.remove();
+  }
+
+  function calculate() {
+    const rows = document.querySelectorAll('.course-row');
+    let totalQP = 0, totalCreds = 0, count = 0;
+
+    rows.forEach(row => {
+      const inputs  = row.querySelectorAll('input');
+      const credits = parseFloat(inputs[1].value);
+      const grade   = row.querySelector('select').value;
+      if (!credits || credits <= 0 || !grade) return;
+      const pts = GRADE_MAP[grade] ?? 0;
+      totalQP += pts * credits;
+      totalCreds += credits;
+      count++;
     });
+
+    const gpa = totalCreds > 0 ? (totalQP / totalCreds) : null;
+
+    document.getElementById('gpaDisplay').textContent  = gpa !== null ? gpa.toFixed(2) : '—';
+    document.getElementById('gpaGrade').textContent    = gpa !== null ? gradeLabel(gpa) : 'Add courses below';
+    document.getElementById('totalCredits').textContent = totalCreds;
+    document.getElementById('totalCourses').textContent = count;
+    document.getElementById('totalQP').textContent      = totalQP.toFixed(1);
   }
 
-  function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  function clearAll() {
+    document.getElementById('coursesList').innerHTML = '';
+    document.getElementById('gpaDisplay').textContent  = '—';
+    document.getElementById('gpaGrade').textContent    = 'Add courses below';
+    document.getElementById('totalCredits').textContent = '0';
+    document.getElementById('totalCourses').textContent = '0';
+    document.getElementById('totalQP').textContent      = '0';
+    rowId = 0;
   }
 
-  function addIdea() {
-    const name = document.getElementById('nameSelect').value.trim();
-    const text = document.getElementById('ideaInput').value.trim();
-    if (!name) { showToast('⚠ Please select your name first.'); return; }
-    if (!text) { showToast('⚠ Please enter an idea.'); return; }
-    ideas.push({ text, author: name });
-    document.getElementById('ideaInput').value = '';
-    render();
-    showToast('✓ Idea added!');
+  // Pre-load 3 sample courses
+  addRow('Mathematics', '3', 'A');
+  addRow('English Literature', '2', 'B+');
+  addRow('Computer Science', '4', 'A-');
+  calculate();
+
+  /* ── TIMER ── */
+  const WORK_SEC  = 25 * 60;
+  const BREAK_SEC = 5  * 60;
+  const CIRCUMFERENCE = 2 * Math.PI * 80;
+
+  let total     = WORK_SEC;
+  let remaining = WORK_SEC;
+  let interval  = null;
+  let isRunning = false;
+  let isBreak   = false;
+  let sessions  = 0;
+
+  const display   = document.getElementById('display');
+  const ring      = document.getElementById('ring');
+  const modeLabel = document.getElementById('modeLabel');
+  const startBtn  = document.getElementById('startBtn');
+  const pauseBtn  = document.getElementById('pauseBtn');
+  const notif     = document.getElementById('notif');
+
+  ring.style.strokeDasharray  = CIRCUMFERENCE;
+  ring.style.strokeDashoffset = 0;
+
+  function fmt(s) {
+    const m = Math.floor(s / 60);
+    return `${String(m).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`;
   }
 
-  function deleteIdea(i) {
-    ideas.splice(i, 1);
-    render();
-    showToast('Idea removed.');
+  function updateRing() {
+    const pct = remaining / total;
+    ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
+    ring.className = 'ring-progress' +
+      (pct <= 0.1 ? ' danger' : pct <= 0.3 ? ' warning' : '');
   }
 
-  function clearInput() {
-    document.getElementById('ideaInput').value = '';
-    document.getElementById('nameSelect').value = '';
+  function tick() {
+    if (remaining <= 0) {
+      clearInterval(interval);
+      interval = null;
+      isRunning = false;
+      triggerNotification();
+      if (!isBreak) {
+        sessions = Math.min(sessions + 1, 4);
+        updateDots();
+        if (sessions < 4) { switchMode(true); }
+      } else {
+        switchMode(false);
+      }
+      return;
+    }
+    remaining--;
+    display.textContent = fmt(remaining);
+    updateRing();
   }
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+  function startTimer() {
+    if (isRunning) return;
+    if (interval) return;
+    isRunning = true;
+    startBtn.style.display = 'none';
+    pauseBtn.style.display = '';
+    interval = setInterval(tick, 1000);
   }
 
-  // Submit on Enter
-  document.getElementById('ideaInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') addIdea();
-  });
+  function pauseTimer() {
+    if (!isRunning) return;
+    clearInterval(interval);
+    interval = null;
+    isRunning = false;
+    startBtn.style.display = '';
+    pauseBtn.style.display = 'none';
+  }
 
-  render();
+  function resetTimer() {
+    clearInterval(interval);
+    interval = null;
+    isRunning = false;
+    isBreak = false;
+    remaining = WORK_SEC;
+    total = WORK_SEC;
+    display.textContent = fmt(remaining);
+    modeLabel.textContent = 'Focus';
+    ring.style.strokeDashoffset = 0;
+    ring.className = 'ring-progress';
+    startBtn.style.display = '';
+    pauseBtn.style.display = 'none';
+    sessions = 0;
+    updateDots();
+  }
+
+  function switchMode(toBreak) {
+    isBreak = toBreak;
+    total = toBreak ? BREAK_SEC : WORK_SEC;
+    remaining = total;
+    modeLabel.textContent = toBreak ? 'Break ☕' : 'Focus';
+    display.textContent = fmt(remaining);
+    ring.style.strokeDashoffset = 0;
+    startBtn.style.display = '';
+    pauseBtn.style.display = 'none';
+    isRunning = false;
+  }
+
+  function updateDots() {
+    for (let i = 0; i < 4; i++) {
+      document.getElementById('d' + i).classList.toggle('done', i < sessions);
+    }
+  }
+
+  function triggerNotification() {
+    if (Notification.permission === 'granted') {
+      new Notification('⏱ UCSC Hub', { body: isBreak ? 'Break over! Back to work.' : "25 min done! Time for a break." });
+    }
+    notif.textContent = isBreak ? '✅ Break over! Focus time.' : '🔔 Time\'s up! Take a 5-min break.';
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 4000);
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.25, 0.5].forEach(delay => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.3, ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.3);
+        osc.start(ctx.currentTime + delay);
+        osc.stop(ctx.currentTime + delay + 0.3);
+      });
+    } catch(e) {}
+  }
+
+  if (Notification && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
 </script>
 </body>
 </html>
