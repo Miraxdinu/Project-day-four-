@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UCSC Student Toolkit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --maroon: #8b0000;
+      --maroon-dark: #6b0000;
+      --maroon-light: #a50000;
+      --gold: #c9a84c;
+      --gold-light: #f0c040;
+      --bg: #f5f3ee;
+      --sidebar-bg: #fff;
+      --text: #1a1a1a;
+      --muted: #777;
+      --border: #e0dbd0;
+      --card: #ffffff;
+    }
+
+    body.dark {
+      --bg: #141414;
+      --sidebar-bg: #1e1e1e;
+      --text: #f0ede8;
+      --muted: #999;
+      --border: #333;
+      --card: #1e1e1e;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      background: var(--maroon);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      gap: 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+    .navbar-logo img {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 2px solid var(--gold);
+      background: var(--maroon-dark);
+    }
+    .navbar-logo-placeholder {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      background: var(--maroon-dark);
+      border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .navbar-brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .navbar-brand span { color: var(--gold); }
+
+    .navbar-nav {
+      display: flex;
+      gap: 0.35rem;
+      margin-left: auto;
+      align-items: center;
+    }
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.7);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--gold);
+      color: var(--maroon-dark);
+      font-weight: 700;
+    }
+
+    /* Dark mode toggle */
+    .dark-toggle {
+      margin-left: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+    .toggle-track {
+      width: 40px; height: 22px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 999px;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .toggle-track.on { background: var(--gold); }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: left 0.25s;
+    }
+    .toggle-track.on .toggle-thumb { left: 21px; }
+    .toggle-icon { font-size: 0.85rem; }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      transition: background 0.3s;
+    }
+    .sidebar-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--maroon);
+      margin-bottom: 1rem;
+      padding-left: 0.25rem;
+    }
+    .event-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.7rem 0.75rem;
+      border-radius: 10px;
+      margin-bottom: 0.4rem;
+      cursor: default;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      border: 1px solid transparent;
+    }
+    .event-item:hover {
+      background: #fff8f0;
+      border-color: var(--gold);
+      transform: scale(1.03);
+      box-shadow: 0 0 10px rgba(201,168,76,0.3);
+    }
+    body.dark .event-item:hover { background: #2a2218; }
+    .event-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .event-text { font-size: 0.82rem; line-height: 1.4; }
+    .event-date { font-size: 0.7rem; color: var(--muted); margin-top: 1px; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content {
+      padding: 2rem;
+      animation: fadeIn 0.5s ease both;
+    }
+
+    .page { display: none; animation: fadeIn 0.4s ease both; }
+    .page.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-heading {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.6rem;
+      color: var(--maroon);
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+    .page-sub { font-size: 0.88rem; color: var(--muted); margin-bottom: 2rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      box-shadow: 0 3px 16px rgba(0,0,0,0.06);
+      transition: background 0.3s;
+    }
+
+    /* placeholder content */
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .welcome-tile {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .welcome-tile:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(139,0,0,0.12);
+      border-color: var(--maroon);
+    }
+    .tile-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .tile-label {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--maroon);
+    }
+    .tile-desc { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+
+    @media (max-width: 640px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-logo" href="#">
+    <div class="navbar-logo-placeholder">UCSC</div>
+    <span class="navbar-brand">UCSC <span>Hub</span></span>
+  </a>
+
+  <div class="navbar-nav">
+    <button class="nav-btn active" onclick="showPage('home', this)">Home</button>
+    <button class="nav-btn" onclick="showPage('gpa', this)">GPA Calculator</button>
+    <button class="nav-btn" onclick="showPage('timer', this)">Study Timer</button>
+
+    <!-- Dark Mode Toggle -->
+    <div class="dark-toggle" onclick="toggleDark()" title="Toggle Dark Mode">
+      <span class="toggle-icon">☀️</span>
+      <div class="toggle-track" id="toggleTrack">
+        <div class="toggle-thumb"></div>
+      </div>
+      <span class="toggle-icon">🌙</span>
+    </div>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">📅 Upcoming Events</div>
+
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Mid-term Exams</div>
+        <div class="event-date">Mar 15, 2025</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Project Submission</div>
+        <div class="event-date">Mar 20, 2025</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Campus Hackathon</div>
+        <div class="event-date">Mar 25, 2025</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Final Exams Week</div>
+        <div class="event-date">Apr 10–17, 2025</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot"></div>
+      <div>
+        <div class="event-text">Graduation Ceremony</div>
+        <div class="event-date">May 3, 2025</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+      <div class="page-heading">Welcome to UCSC Hub 👋</div>
+      <div class="page-sub">Your all-in-one student toolkit. Choose a tool to get started.</div>
+      <div class="welcome-grid">
+        <div class="welcome-tile" onclick="showPage('gpa', document.querySelectorAll('.nav-btn')[1])">
+          <div class="tile-icon">🎓</div>
+          <div class="tile-label">GPA Calculator</div>
+          <div class="tile-desc">Compute your semester GPA instantly</div>
+        </div>
+        <div class="welcome-tile" onclick="showPage('timer', document.querySelectorAll('.nav-btn')[2])">
+          <div class="tile-icon">⏱️</div>
+          <div class="tile-label">Study Timer</div>
+          <div class="tile-desc">25-minute Pomodoro focus sessions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GPA PAGE (placeholder - filled by gpa.html) -->
+    <div class="page" id="page-gpa">
+      <div class="page-heading">GPA Calculator</div>
+      <div class="page-sub">Add your courses and calculate your GPA.</div>
+      <div class="card">
+        <p style="color:var(--muted);font-size:0.9rem;">
+          GPA Calculator module loads here. Merge <code>gpa.html</code> content into this section.
+        </p>
+      </div>
+    </div>
+
+    <!-- TIMER PAGE (placeholder - filled by timer.html) -->
+    <div class="page" id="page-timer">
+      <div class="page-heading">Study Timer</div>
+      <div class="page-sub">Stay focused with Pomodoro sessions.</div>
+      <div class="card">
+        <p style="color:var(--muted);font-size:0.9rem;">
+          Study Timer module loads here. Merge <code>timer.html</code> content into this section.
+        </p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  function toggleDark() {
+    document.body.classList.toggle('dark');
+    document.getElementById('toggleTrack').classList.toggle('on');
+  }
+</script>
+</body>
+</html>
