@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Group Idea Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0f0e17;
+      --paper: #faf9f6;
+      --cream: #f2efe8;
+      --accent: #e8613a;
+      --accent2: #3a7de8;
+      --muted: #8a8577;
+      --card: #ffffff;
+      --border: #e2ddd6;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo-dot {
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .header-badge {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 3.5rem 2.5rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      right: -80px; top: -80px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(232,97,58,0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      left: 30%; bottom: -60px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(58,125,232,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      max-width: 500px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero p {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: rgba(250,249,246,0.55);
+      max-width: 380px;
+      line-height: 1.6;
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      max-width: 780px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    /* ── INPUT CARD ── */
+    .input-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 24px rgba(15,14,23,0.06);
+      margin-bottom: 2rem;
+    }
+    .input-card-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .input-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .select-wrap {
+      position: relative;
+      flex: 0 0 200px;
+    }
+    .select-wrap select {
+      appearance: none;
+      width: 100%;
+      padding: 0.7rem 2.2rem 0.7rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      background: var(--cream);
+      color: var(--ink);
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .select-wrap select:focus { border-color: var(--accent); }
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 0.75rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .idea-input {
+      flex: 1 1 200px;
+      padding: 0.7rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      background: var(--cream);
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .idea-input::placeholder { color: #bbb5ab; }
+    .idea-input:focus { border-color: var(--accent2); }
+    .btn-add {
+      padding: 0.7rem 1.5rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn-add:hover { background: #d0512e; }
+    .btn-add:active { transform: scale(0.97); }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .stats-row h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+    .idea-count {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 12px;
+    }
+    .idea-count strong { color: var(--accent); font-weight: 700; }
+    .btn-clear {
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .btn-clear:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ── IDEA LIST ── */
+    .ideas-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+
+    .idea-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      animation: slideIn 0.3s cubic-bezier(0.22,1,0.36,1);
+      box-shadow: 0 2px 8px rgba(15,14,23,0.04);
+      transition: box-shadow 0.2s;
+    }
+    .idea-item:hover { box-shadow: 0 4px 16px rgba(15,14,23,0.09); }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .idea-index {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 0.7rem;
+      color: var(--border);
+      min-width: 24px;
+    }
+    .idea-text {
+      flex: 1;
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+    .idea-author {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-style: italic;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .author-avatar {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.6rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .btn-delete {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #d0cac2;
+      font-size: 1rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      line-height: 1;
+    }
+    .btn-delete:hover { color: var(--accent); background: #fdf0ec; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+    }
+    .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--cream);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 520px) {
+      .select-wrap { flex: 0 0 100%; }
+      .idea-input  { flex: 1 1 100%; }
+      .btn-add     { width: 100%; }
+      header { padding: 0 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo"><span class="logo-dot"></span> IdeaBoard</div>
+
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-label">Collaborative Thinking</div>
+  <h1>Every great idea<br/>starts <em>here.</em></h1>
+  <p>Add your ideas below, see what your team is thinking, and build something amazing together.</p>
+</section>
+
+<!-- MAIN -->
+<main>
+
+  <!-- INPUT CARD -->
+  <div class="input-card">
+    <div class="input-card-title">Submit an Idea</div>
+    <div class="input-row">
+      <div class="select-wrap">
+        <select id="nameSelect">
+          <option value="">Select your name…</option>
+          <option>Alex</option>
+          <option>Sara</option>
+          <option>Nimal</option>
+          <option>Jordan</option>
+          <option>Priya</option>
+          <option>Leo</option>
+        </select>
+      </div>
+      <input class="idea-input" id="ideaInput" type="text" placeholder="Enter your idea here…" maxlength="200"/>
+      <button class="btn-add" onclick="addIdea()">+ Add Idea</button>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <h2>Board Ideas</h2>
+    <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+      <div class="idea-count">Total: <strong id="ideaCountNum">3</strong> ideas</div>
+      <button class="btn-clear" onclick="clearInput()">✕ Clear input</button>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <ul class="ideas-list" id="ideasList"></ul>
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="empty-icon">💡</div>
+    <p>No ideas yet.<br/>Be the first to share one!</p>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>Group Idea Board &nbsp;©&nbsp;2025</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const AVATAR_COLORS = ['#e8613a','#3a7de8','#3ab87d','#c03ae8','#e8b83a','#3ae8d4'];
+  const ideas = [
+    { text: 'Build a study planner', author: 'Nimal' },
+    { text: 'Start a podcast',       author: 'Sara'  },
+    { text: 'Organize a coding workshop', author: 'Alex' },
+  ];
+
+  function avatarColor(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+    return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+  }
+
+  function render() {
+    const list = document.getElementById('ideasList');
+    const empty = document.getElementById('emptyState');
+    document.getElementById('ideaCountNum').textContent = ideas.length;
+    list.innerHTML = '';
+    if (!ideas.length) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    ideas.forEach((idea, i) => {
+      const li = document.createElement('li');
+      li.className = 'idea-item';
+      const initials = idea.author.slice(0, 2).toUpperCase();
+      li.innerHTML = `
+        <span class="idea-index">${String(i+1).padStart(2,'0')}</span>
+        <span class="idea-text">${escHtml(idea.text)}</span>
+        <span class="idea-author">
+          <span class="author-avatar" style="background:${avatarColor(idea.author)}">${initials}</span>
+          suggested by <strong>${escHtml(idea.author)}</strong>
+        </span>
+        <button class="btn-delete" onclick="deleteIdea(${i})" title="Remove idea">✕</button>`;
+      list.appendChild(li);
+    });
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function addIdea() {
+    const name = document.getElementById('nameSelect').value.trim();
+    const text = document.getElementById('ideaInput').value.trim();
+    if (!name) { showToast('⚠ Please select your name first.'); return; }
+    if (!text) { showToast('⚠ Please enter an idea.'); return; }
+    ideas.push({ text, author: name });
+    document.getElementById('ideaInput').value = '';
+    render();
+    showToast('✓ Idea added!');
+  }
+
+  function deleteIdea(i) {
+    ideas.splice(i, 1);
+    render();
+    showToast('Idea removed.');
+  }
+
+  function clearInput() {
+    document.getElementById('ideaInput').value = '';
+    document.getElementById('nameSelect').value = '';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // Submit on Enter
+  document.getElementById('ideaInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addIdea();
+  });
+
+  render();
+</script>
+</body>
+</html>
